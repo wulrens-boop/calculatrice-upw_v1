@@ -854,6 +854,7 @@ body.dark-mode .separator {
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
 <script>
 'use strict';
@@ -874,7 +875,20 @@ let firebaseInitialized = false;
 try {
   firebase.initializeApp(firebaseConfig);
   database = firebase.database();
-  firebaseInitialized = true;
+  
+  // Authentification anonyme automatique
+  firebase.auth().signInAnonymously()
+    .then(() => {
+      console.log('✅ Connecté anonymement');
+      firebaseInitialized = true;
+      // Charger les données une fois authentifié
+      chargerDonneesFirebase();
+    })
+    .catch((error) => {
+      console.error('❌ Erreur d\'authentification:', error);
+      alert('⚠️ Erreur de connexion à la base de données');
+    });
+    
   console.log('✅ Firebase initialisé');
 } catch (error) {
   console.error('❌ Erreur Firebase:', error);
@@ -1348,10 +1362,6 @@ document.addEventListener('input', (e) => {
       sauvegarderEtatsBornes();
     }, 500);
   }
-});
-
-window.addEventListener('load', () => {
-  chargerDonneesFirebase();
 });
 </script>
 
